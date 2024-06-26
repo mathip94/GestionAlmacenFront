@@ -1,0 +1,103 @@
+﻿@using Models
+@model ArticuloConMovimientosViewModel
+
+@{
+    ViewBag.Title = "Consulta de Artículos por Rango de Fechas";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+
+<form method="get" class="container mt-4">
+    <div class="form-group">
+        <label for="FechaInicio">Fecha de Inicio</label>
+        <input type="date" asp-for="FechaInicio" class="form-control" />
+        <span asp-validation-for="FechaInicio" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="FechaFin">Fecha de Fin</label>
+        <input type="date" asp-for="FechaFin" class="form-control" />
+        <span asp-validation-for="FechaFin" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+@if (Model.BusquedaRealizada)
+{
+    <div class="mt-4">
+        <p><strong>Total de elementos encontrados:</strong> @Model.Paginacion.TotalDeItems</p>
+    </div>
+}
+
+@if (Model.Articulos != null && Model.Articulos.Any())
+{
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Código</th>
+                <th>Precio de Venta</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var articulo in Model.Articulos)
+            {
+                <tr>
+                    <td>@articulo.Nombre</td>
+                    <td>@articulo.Descripcion</td>
+                    <td>@articulo.Codigo</td>
+                    <td>@articulo.PrecioVenta</td>
+                    <td>@articulo.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="pagination mt-4">
+        @if (Model.Paginacion.TotalDeItems > Model.Paginacion.TamañoPagina)
+        {
+            <ul class="pagination">
+                @if (Model.Paginacion.PaginaActual > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="ConsultaPorFechas" asp-route-fechaInicio="@Model.FechaInicio?.ToString("yyyy-MM-dd")" asp-route-fechaFin="@Model.FechaFin?.ToString("yyyy-MM-dd")" asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.Paginacion.PaginasTotales; i++)
+                {
+                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                        <a class="page-link" asp-action="ConsultaPorFechas" asp-route-fechaInicio="@Model.FechaInicio?.ToString("yyyy-MM-dd")" asp-route-fechaFin="@Model.FechaFin?.ToString("yyyy-MM-dd")" asp-route-pagina="@i">@i</a>
+                    </li>
+                }
+                @if (Model.Paginacion.PaginaActual < Model.Paginacion.PaginasTotales)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="ConsultaPorFechas" asp-route-fechaInicio="@Model.FechaInicio?.ToString("yyyy-MM-dd")" asp-route-fechaFin="@Model.FechaFin?.ToString("yyyy-MM-dd")" asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}

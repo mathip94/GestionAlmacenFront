@@ -1,0 +1,65 @@
+﻿@using Models
+@model MovimientoDeStockViewModel
+
+@{
+    ViewBag.Title = "Crear Movimiento de Stock";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+
+<form asp-action="Crear" method="post" class="container mt-4">
+    <div class="form-group">
+        <label for="ArticuloId">Artículo</label>
+        <select asp-for="ArticuloId" class="form-control">
+            <option value="">Seleccione un Artículo</option>
+            @foreach (var articulo in ViewBag.Articulos)
+            {
+                <option value="@articulo.id">@articulo.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="ArticuloId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TipoDeMovimientoId">Tipo de Movimiento</label>
+        <select asp-for="TipoDeMovimientoId" class="form-control">
+            <option value="">Seleccione el Tipo de Movimiento</option>
+            @foreach (var tipo in ViewBag.TiposDeMovimiento)
+            {
+                <option value="@tipo.Id">@tipo.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="TipoDeMovimientoId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Movimiento.CantidadDeUnidadesMovidas" class="control-label"></label>
+        <input asp-for="Movimiento.CantidadDeUnidadesMovidas" class="form-control" />
+        <span asp-validation-for="Movimiento.CantidadDeUnidadesMovidas" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar Movimiento</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

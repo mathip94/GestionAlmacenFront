@@ -1,0 +1,40 @@
+﻿@using Models
+@model ResumenMovimientosViewModel
+
+@{
+    ViewBag.Title = "Resumen de Movimientos";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@if (Model.ResumenPorAño != null && Model.ResumenPorAño.Any())
+{
+    <div class="mt-4">
+        @foreach (var resumen in Model.ResumenPorAño)
+        {
+            <h3>Año: @resumen.Año</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tipo de Movimiento</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in resumen.Detalles)
+                    {
+                        <tr>
+                            <td>@detalle.TipoMovimiento</td>
+                            <td>@detalle.Cantidad</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p><strong>Total año @resumen.Año:</strong> @resumen.TotalAnual</p>
+        }
+    </div>
+}
+else
+{
+    <p>No hay datos disponibles.</p>
+}

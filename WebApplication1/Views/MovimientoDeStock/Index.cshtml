@@ -1,0 +1,115 @@
+﻿@using Models
+@model MovimientoDeStockConsultaViewModel
+
+@{
+    ViewBag.Title = "Buscar Movimientos de Stock";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@{
+    var mensajeExito = TempData["Exito"] as string;
+    var mensajeError = TempData["Error"] as string;
+}
+
+@if (!string.IsNullOrEmpty(mensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @mensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="alert alert-danger" role="alert">
+        @mensajeError
+    </div>
+}
+
+<form method="get" class="container mt-4">
+    <div class="form-group">
+        <label for="ArticuloId">Artículo</label>
+        <select asp-for="ArticuloId" class="form-control">
+            <option value="">Seleccione un Artículo</option>
+            @foreach (var articulo in ViewBag.Articulos)
+            {
+                <option value="@articulo.id">@articulo.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="ArticuloId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="TipoDeMovimientoId">Tipo de Movimiento</label>
+        <select asp-for="TipoDeMovimientoId" class="form-control">
+            <option value="">Seleccione el Tipo de Movimiento</option>
+            @foreach (var tipo in ViewBag.TiposDeMovimiento)
+            {
+                <option value="@tipo.Id">@tipo.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="TipoDeMovimientoId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+@if (Model.BusquedaRealizada)
+{
+    <div class="mt-4">
+        <p><strong>Total de elementos encontrados:</strong> @Model.Paginacion.TotalDeItems</p>
+    </div>
+}
+
+@if (Model.Movimientos != null && Model.Movimientos.Any())
+{
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Artículo</th>
+                <th>Tipo de Movimiento</th>
+                <th>Empleado</th>
+                <th>Cantidad de Unidades Movidas</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movimiento in Model.Movimientos)
+            {
+                <tr>
+                    <td>@movimiento.FechaYHora</td>
+                    <td>@movimiento.Articulo.Nombre </td>
+                    <td>@movimiento.TipoDeMovimiento.Nombre </td>
+                    <td>@movimiento.Empleado.Nombre </td>
+                    <td>@movimiento.CantidadDeUnidadesMovidas</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="pagination mt-4">
+        @if (Model.Paginacion.TotalDeItems > Model.Paginacion.TamañoPagina)
+        {
+            <ul class="pagination">
+                @if (Model.Paginacion.PaginaActual > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-articuloId="@Model.ArticuloId" asp-route-tipoDeMovimientoId="@Model.TipoDeMovimientoId" asp-route-pagina="@(Model.Paginacion.PaginaActual - 1)">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.Paginacion.PaginasTotales; i++)
+                {
+                    <li class="page-item @(i == Model.Paginacion.PaginaActual ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-articuloId="@Model.ArticuloId" asp-route-tipoDeMovimientoId="@Model.TipoDeMovimientoId" asp-route-pagina="@i">@i</a>
+                    </li>
+                }
+                @if (Model.Paginacion.PaginaActual < Model.Paginacion.PaginasTotales)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-articuloId="@Model.ArticuloId" asp-route-tipoDeMovimientoId="@Model.TipoDeMovimientoId" asp-route-pagina="@(Model.Paginacion.PaginaActual + 1)">Next</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}
